@@ -1,0 +1,186 @@
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Eye, EyeOff, UserPlus } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+
+const Signup = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
+    referralCode: "",
+    agreeTerms: false
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (formData.password !== formData.confirmPassword) {
+      toast({
+        title: "Password Mismatch",
+        description: "Passwords do not match. Please try again.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!formData.agreeTerms) {
+      toast({
+        title: "Terms Required",
+        description: "Please agree to the terms and conditions.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    toast({
+      title: "Signup Functionality",
+      description: "Please connect to Supabase to enable user registration.",
+    });
+  };
+
+  return (
+    <main className="min-h-screen flex items-center justify-center py-20 px-4 bg-gradient-hero">
+      <Card className="w-full max-w-md p-8">
+        <div className="text-center mb-8">
+          <div className="h-16 w-16 mx-auto rounded-xl bg-gradient-primary flex items-center justify-center mb-4">
+            <span className="text-primary-foreground font-heading font-bold text-2xl">KS</span>
+          </div>
+          <h1 className="font-heading font-bold text-3xl mb-2">Create Account</h1>
+          <p className="font-body text-muted-foreground">
+            Join Kora Sphere and start your journey
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <Label htmlFor="fullName">Full Name *</Label>
+            <Input
+              id="fullName"
+              value={formData.fullName}
+              onChange={(e) => setFormData({...formData, fullName: e.target.value})}
+              required
+              placeholder="John Doe"
+              className="mt-1"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="email">Email Address *</Label>
+            <Input
+              id="email"
+              type="email"
+              value={formData.email}
+              onChange={(e) => setFormData({...formData, email: e.target.value})}
+              required
+              placeholder="you@example.com"
+              className="mt-1"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="phone">Phone Number</Label>
+            <Input
+              id="phone"
+              type="tel"
+              value={formData.phone}
+              onChange={(e) => setFormData({...formData, phone: e.target.value})}
+              placeholder="+234 806 123 4567"
+              className="mt-1"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="password">Password *</Label>
+            <div className="relative mt-1">
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                value={formData.password}
+                onChange={(e) => setFormData({...formData, password: e.target.value})}
+                required
+                placeholder="••••••••"
+                className="pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <Label htmlFor="confirmPassword">Confirm Password *</Label>
+            <Input
+              id="confirmPassword"
+              type="password"
+              value={formData.confirmPassword}
+              onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
+              required
+              placeholder="••••••••"
+              className="mt-1"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="referralCode">Referral Code (Optional)</Label>
+            <Input
+              id="referralCode"
+              value={formData.referralCode}
+              onChange={(e) => setFormData({...formData, referralCode: e.target.value})}
+              placeholder="Enter referral code"
+              className="mt-1"
+            />
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="terms"
+              checked={formData.agreeTerms}
+              onCheckedChange={(checked) => setFormData({...formData, agreeTerms: checked as boolean})}
+            />
+            <Label htmlFor="terms" className="text-sm font-normal cursor-pointer">
+              I agree to the{" "}
+              <Link to="/terms" className="text-primary hover:underline">
+                Terms & Conditions
+              </Link>
+              {" "}and{" "}
+              <Link to="/privacy" className="text-primary hover:underline">
+                Privacy Policy
+              </Link>
+            </Label>
+          </div>
+
+          <Button type="submit" className="w-full bg-gradient-primary" size="lg">
+            <UserPlus className="h-4 w-4 mr-2" />
+            Create Account
+          </Button>
+        </form>
+
+        <div className="mt-6 text-center">
+          <p className="font-body text-sm text-muted-foreground">
+            Already have an account?{" "}
+            <Link to="/login" className="text-primary font-semibold hover:underline">
+              Sign in
+            </Link>
+          </p>
+        </div>
+      </Card>
+    </main>
+  );
+};
+
+export default Signup;
