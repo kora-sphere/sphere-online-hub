@@ -14,7 +14,340 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      delivery_tracking: {
+        Row: {
+          created_at: string | null
+          current_location: string | null
+          delivered_at: string | null
+          delivery_address: string | null
+          estimated_delivery: string | null
+          id: string
+          order_id: string
+          tracking_updates: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          current_location?: string | null
+          delivered_at?: string | null
+          delivery_address?: string | null
+          estimated_delivery?: string | null
+          id?: string
+          order_id: string
+          tracking_updates?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          current_location?: string | null
+          delivered_at?: string | null
+          delivery_address?: string | null
+          estimated_delivery?: string | null
+          id?: string
+          order_id?: string
+          tracking_updates?: Json | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delivery_tracking_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_attachments: {
+        Row: {
+          file_name: string
+          file_type: string | null
+          file_url: string
+          id: string
+          order_id: string
+          uploaded_at: string | null
+        }
+        Insert: {
+          file_name: string
+          file_type?: string | null
+          file_url: string
+          id?: string
+          order_id: string
+          uploaded_at?: string | null
+        }
+        Update: {
+          file_name?: string
+          file_type?: string | null
+          file_url?: string
+          id?: string
+          order_id?: string
+          uploaded_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_attachments_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_messages: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_staff_message: boolean | null
+          message: string | null
+          order_id: string
+          user_id: string
+          voice_note_url: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_staff_message?: boolean | null
+          message?: string | null
+          order_id: string
+          user_id: string
+          voice_note_url?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_staff_message?: boolean | null
+          message?: string | null
+          order_id?: string
+          user_id?: string
+          voice_note_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_messages_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          service_id: string | null
+          status: Database["public"]["Enums"]["order_status"] | null
+          total_amount: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          service_id?: string | null
+          status?: Database["public"]["Enums"]["order_status"] | null
+          total_amount?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          service_id?: string | null
+          status?: Database["public"]["Enums"]["order_status"] | null
+          total_amount?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payments: {
+        Row: {
+          amount: number
+          created_at: string | null
+          id: string
+          order_id: string
+          payment_method: Database["public"]["Enums"]["payment_method"] | null
+          payment_status: Database["public"]["Enums"]["payment_status"] | null
+          transaction_reference: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          id?: string
+          order_id: string
+          payment_method?: Database["public"]["Enums"]["payment_method"] | null
+          payment_status?: Database["public"]["Enums"]["payment_status"] | null
+          transaction_reference?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          id?: string
+          order_id?: string
+          payment_method?: Database["public"]["Enums"]["payment_method"] | null
+          payment_status?: Database["public"]["Enums"]["payment_status"] | null
+          transaction_reference?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string | null
+          full_name: string | null
+          id: string
+          phone: string | null
+          referral_code: string | null
+          referred_by: string | null
+          role: Database["public"]["Enums"]["user_role"] | null
+          updated_at: string | null
+          username: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          full_name?: string | null
+          id: string
+          phone?: string | null
+          referral_code?: string | null
+          referred_by?: string | null
+          role?: Database["public"]["Enums"]["user_role"] | null
+          updated_at?: string | null
+          username?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          referral_code?: string | null
+          referred_by?: string | null
+          role?: Database["public"]["Enums"]["user_role"] | null
+          updated_at?: string | null
+          username?: string | null
+        }
+        Relationships: []
+      }
+      referral_rewards: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_claimed: boolean | null
+          referred_id: string
+          referrer_id: string
+          reward_amount: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_claimed?: boolean | null
+          referred_id: string
+          referrer_id: string
+          reward_amount?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_claimed?: boolean | null
+          referred_id?: string
+          referrer_id?: string
+          reward_amount?: number | null
+        }
+        Relationships: []
+      }
+      saved_documents: {
+        Row: {
+          created_at: string | null
+          file_name: string
+          file_size: number | null
+          file_type: string | null
+          file_url: string
+          folder_path: string | null
+          id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          file_name: string
+          file_size?: number | null
+          file_type?: string | null
+          file_url: string
+          folder_path?: string | null
+          id?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          file_name?: string
+          file_size?: number | null
+          file_type?: string | null
+          file_url?: string
+          folder_path?: string | null
+          id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      services: {
+        Row: {
+          category: Database["public"]["Enums"]["service_category"]
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          price: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          category: Database["public"]["Enums"]["service_category"]
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          price?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["service_category"]
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          price?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +356,16 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      order_status:
+        | "pending"
+        | "in_progress"
+        | "completed"
+        | "delivered"
+        | "cancelled"
+      payment_method: "paystack" | "flutterwave" | "bank_transfer" | "card"
+      payment_status: "pending" | "completed" | "failed" | "refunded"
+      service_category: "cyber_cafe" | "soft_skills"
+      user_role: "user" | "admin" | "staff"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +492,18 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      order_status: [
+        "pending",
+        "in_progress",
+        "completed",
+        "delivered",
+        "cancelled",
+      ],
+      payment_method: ["paystack", "flutterwave", "bank_transfer", "card"],
+      payment_status: ["pending", "completed", "failed", "refunded"],
+      service_category: ["cyber_cafe", "soft_skills"],
+      user_role: ["user", "admin", "staff"],
+    },
   },
 } as const
