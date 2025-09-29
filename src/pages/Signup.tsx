@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,11 +7,13 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Eye, EyeOff, UserPlus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const Signup = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -22,7 +24,18 @@ const Signup = () => {
     agreeTerms: false
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Check if user is already logged in
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        navigate("/dashboard");
+      }
+    };
+    checkUser();
+  }, [navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (formData.password !== formData.confirmPassword) {
@@ -43,10 +56,97 @@ const Signup = () => {
       return;
     }
 
-    toast({
-      title: "Signup Functionality",
-      description: "Please connect to Supabase to enable user registration.",
-    });
+    setLoading(true);
+
+    try {
+      // Check if referral code is valid
+      let referrerId = null;
+      if (formData.referralCode) {
+        const { data: referrer } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('referral_code', formData.referralCode)
+          .single();
+        
+        if (referrer) {
+          referrerId = referrer.id;
+        } else {
+          toast({
+            title: "Invalid Referral Code",
+            description: "The referral code you entered is invalid. You can continue without it.",
+            variant: "destructive"
+          });
+        }
+      }
+
+      // Sign up the user
+      const redirectUrl = `${window.location.origin}/`;
+      const { data, error } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          emailRedirectTo: redirectUrl,
+          data: {
+            full_name: formData.fullName,
+            phone: formData.phone,
+            referred_by: referrerId
+          }
+        }
+      });
+
+      if (error) {
+        if (error.message.includes("already registered")) {
+          toast({
+            title: "Email Already Registered",
+            description: "This email is already registered. Please sign in instead.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Signup Failed",
+            description: error.message,
+            variant: "destructive",
+          });
+        }
+      } else if (data.user) {
+        // Update profile with additional info
+        if (data.session) {
+          await supabase
+            .from('profiles')
+            .update({
+              full_name: formData.fullName,
+              phone: formData.phone,
+              referred_by: referrerId
+            })
+            .eq('id', data.user.id);
+          
+          // Create referral reward if applicable
+          if (referrerId) {
+            await supabase
+              .from('referral_rewards')
+              .insert({
+                referrer_id: referrerId,
+                referred_id: data.user.id,
+                reward_amount: 1000 // You can adjust this amount
+              });
+          }
+        }
+
+        toast({
+          title: "Account Created!",
+          description: "Please check your email to verify your account. You can now log in.",
+        });
+        navigate("/login");
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -164,9 +264,9 @@ const Signup = () => {
             </Label>
           </div>
 
-          <Button type="submit" className="w-full bg-gradient-primary" size="lg">
+          <Button type="submit" className="w-full bg-gradient-primary" size="lg" disabled={loading}>
             <UserPlus className="h-4 w-4 mr-2" />
-            Create Account
+            {loading ? "Creating Account..." : "Create Account"}
           </Button>
         </form>
 
