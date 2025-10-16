@@ -3,9 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { MessageCircle, Mail, Phone, MapPin, Clock, Send } from "lucide-react";
+import { Mail, Phone, MapPin, Clock, Send } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import ChatWidget from "@/components/chat/ChatWidget";
 
 const Contact = () => {
   const { toast } = useToast();
@@ -32,10 +33,6 @@ const Contact = () => {
     });
   };
 
-  const handleWhatsApp = () => {
-    const message = encodeURIComponent("Hello, I need assistance with your services.");
-    window.open(`https://wa.me/2348061234567?text=${message}`, "_blank");
-  };
 
   return (
     <main className="min-h-screen py-20">
@@ -50,26 +47,14 @@ const Contact = () => {
           </p>
         </div>
 
+        {/* Live Chat Section */}
+        <div className="mb-12">
+          <ChatWidget />
+        </div>
+
         <div className="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {/* Contact Information */}
           <div className="lg:col-span-1 space-y-6">
-            {/* WhatsApp Card */}
-            <Card className="p-6 border-2 border-primary/20 bg-gradient-card">
-              <div className="flex items-center mb-4">
-                <MessageCircle className="h-8 w-8 text-primary mr-3" />
-                <h3 className="font-heading font-semibold text-xl">Chat on WhatsApp</h3>
-              </div>
-              <p className="font-body text-sm text-muted-foreground mb-4">
-                Get instant support through WhatsApp
-              </p>
-              <Button 
-                onClick={handleWhatsApp}
-                className="w-full bg-success hover:bg-success/90"
-              >
-                <MessageCircle className="h-4 w-4 mr-2" />
-                Open WhatsApp
-              </Button>
-            </Card>
 
             {/* Contact Details */}
             <Card className="p-6">
